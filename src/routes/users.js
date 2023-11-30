@@ -4,7 +4,11 @@ const UserController = require('../controller/users.js')
 
 const router = express.Router()
 
+// GET ALL
 router.get('/', UserController.getAllUsers)
+
+// GET by ID
+router.get('/:id', UserController.getUserByID)
 
 // CREATE - POST
 router.post('/', UserController.createNewUser)

@@ -6,19 +6,26 @@ const getAllUsers = () => {
   return dbPool.execute(query)
 }
 
+const getUserById = async (id) => {
+  const query = 'SELECT * FROM users WHERE id = ?'
+  return dbPool.execute(query, [id])
+}
+
 const createNewUser = (body) => {
   const query = `INSERT INTO users (name, email, address) 
-                 VALUES ('${body.name}', '${body.email}', '${body.address}')`
+                 VALUES (?, ?, ?)`
+  const bodyData = [body.name, body.email, body.address]
 
-  return dbPool.execute(query)
+  return dbPool.execute(query, bodyData)
 }
 
 const updateUser = (body, id) => {
   const query = `UPDATE users 
-                 SET name='${body.name}', email='${body.email}', address='${body.address}' 
-                 WHERE id=${id}`
+                 SET name=?, email=?, address=? 
+                 WHERE id=?`
+  const bodyData = [body.name, body.email, body.address, id]
 
-  return dbPool.execute(query)
+  return dbPool.execute(query, bodyData)
 }
 
 const deleteUser = (id) => {
@@ -29,6 +36,7 @@ const deleteUser = (id) => {
 
 module.exports = {
   getAllUsers,
+  getUserById,
   createNewUser,
   updateUser,
   deleteUser

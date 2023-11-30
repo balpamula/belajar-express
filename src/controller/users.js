@@ -16,9 +16,35 @@ const getAllUsers = async (req, res) => {
   }
 }
 
+const getUserByID = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const [data] = await UsersModel.getUserById(id)
+
+    res.status(200).json({
+      message: 'Data retrieved successfully',
+      data
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error
+    })
+  }
+}
+
 const createNewUser = async (req, res) => {
   console.log(req.body)
   const { body } = req
+
+  if (!body.name || !body.email || !body.address) {
+    return res.status(400).json({
+      error: 'Bad Request',
+      message: 'The request body is not correctly formatted or contains invalid data.'
+    })
+  }
+
   try {
     await UsersModel.createNewUser(body)
 
@@ -59,6 +85,14 @@ const deleteUser = async (req, res) => {
   const { id } = req.params
 
   try {
+    const user = await UsersModel.getUserById(id)
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found'
+      })
+    }
+
     await UsersModel.deleteUser(id)
     res.status(200).json({
       message: 'Delete User success'
@@ -73,6 +107,7 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   getAllUsers,
+  getUserByID,
   createNewUser,
   updateUser,
   deleteUser
