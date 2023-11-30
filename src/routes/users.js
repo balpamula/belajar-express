@@ -1,6 +1,7 @@
 const express = require('express')
 
 const UserController = require('../controller/users.js')
+const { userValidator, runValidaton } = require('../validations/users.js')
 
 const router = express.Router()
 
@@ -11,7 +12,7 @@ router.get('/', UserController.getAllUsers)
 router.get('/:id', UserController.getUserByID)
 
 // CREATE - POST
-router.post('/', UserController.createNewUser)
+router.post('/', userValidator, runValidaton, UserController.createNewUser)
 
 // UPDATE - PATCH
 router.patch('/:id', UserController.updateUser)

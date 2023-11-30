@@ -18,10 +18,15 @@ const getAllUsers = async (req, res) => {
 
 const getUserByID = async (req, res) => {
   const { id } = req.params
+  const [data] = await UsersModel.getUserById(id)
+
+  if (data == '') {
+    return res.status(404).json({
+      message: 'User not found'
+    })
+  }
 
   try {
-    const [data] = await UsersModel.getUserById(id)
-
     res.status(200).json({
       message: 'Data retrieved successfully',
       data
@@ -63,6 +68,14 @@ const createNewUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params
   const { body } = req
+  const [data] = await UsersModel.getUserById(id)
+
+  if (data == '') {
+    return res.status(404).json({
+      message: 'User not found'
+    })
+  }
+
   try {
     await UsersModel.updateUser(body, id)
 
@@ -83,16 +96,15 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { id } = req.params
+  const [data] = await UsersModel.getUserById(id)
+
+  if (data !== id) {
+    return res.status(404).json({
+      message: 'User not found'
+    })
+  }
 
   try {
-    const user = await UsersModel.getUserById(id)
-
-    if (!user) {
-      return res.status(404).json({
-        message: 'User not found'
-      })
-    }
-
     await UsersModel.deleteUser(id)
     res.status(200).json({
       message: 'Delete User success'
