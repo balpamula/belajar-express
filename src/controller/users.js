@@ -1,8 +1,8 @@
-const UsersModel = require('../models/users')
+const usersModel = require('../models/users')
 
 const getAllUsers = async (req, res) => {
   try {
-    const [data] = await UsersModel.getAllUsers()
+    const [data] = await usersModel.getAllUsers()
 
     res.status(200).json({
       message: 'GET All Users success',
@@ -18,7 +18,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserByID = async (req, res) => {
   const { id } = req.params
-  const [data] = await UsersModel.getUserById(id)
+  const [data] = await usersModel.getUserById(id)
 
   if (data == '') {
     return res.status(404).json({
@@ -43,15 +43,8 @@ const createNewUser = async (req, res) => {
   console.log(req.body)
   const { body } = req
 
-  if (!body.name || !body.email || !body.address) {
-    return res.status(400).json({
-      error: 'Bad Request',
-      message: 'The request body is not correctly formatted or contains invalid data.'
-    })
-  }
-
   try {
-    await UsersModel.createNewUser(body)
+    await usersModel.createNewUser(body)
 
     res.status(201).json({
       message: 'Create New User success',
@@ -68,7 +61,7 @@ const createNewUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params
   const { body } = req
-  const [data] = await UsersModel.getUserById(id)
+  const [data] = await usersModel.getUserById(id)
 
   if (data == '') {
     return res.status(404).json({
@@ -77,7 +70,7 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    await UsersModel.updateUser(body, id)
+    await usersModel.updateUser(body, id)
 
     res.status(200).json({
       message: 'Update User success',
@@ -96,16 +89,16 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { id } = req.params
-  const [data] = await UsersModel.getUserById(id)
+  const [data] = await usersModel.getUserById(id)
 
-  if (data !== id) {
+  if (data == '') {
     return res.status(404).json({
       message: 'User not found'
     })
   }
 
   try {
-    await UsersModel.deleteUser(id)
+    await usersModel.deleteUser(id)
     res.status(200).json({
       message: 'Delete User success'
     })

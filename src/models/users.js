@@ -1,4 +1,5 @@
 const dbPool = require('../config/database')
+const bcrypt = require('bcrypt')
 
 const getAllUsers = () => {
   const query = 'SELECT * FROM users'
@@ -7,23 +8,29 @@ const getAllUsers = () => {
 }
 
 const getUserById = async (id) => {
-  const query = 'SELECT * FROM users WHERE id = ?'
+  const query = 'SELECT * FROM users WHERE id=?'
   return dbPool.execute(query, [id])
 }
 
-const createNewUser = (body) => {
-  const query = `INSERT INTO users (name, email, address) 
+const findEmail = (email) => {
+  const query = 'SELECT * FROM users WHERE email=?'
+  return dbPool.execute(query, [email])
+}
+
+const createNewUser = async (body) => {
+  const hashedPassword = await bcrypt.hash(body.password, 10)
+  const query = `INSERT INTO users (name, email, password) 
                  VALUES (?, ?, ?)`
-  const bodyData = [body.name, body.email, body.address]
+  const bodyData = [body.name, body.email, hashedPassword]
 
   return dbPool.execute(query, bodyData)
 }
 
 const updateUser = (body, id) => {
   const query = `UPDATE users 
-                 SET name=?, email=?, address=? 
+                 SET name=?, email=?, password=? 
                  WHERE id=?`
-  const bodyData = [body.name, body.email, body.address, id]
+  const bodyData = [body.name, body.email, body.password, id]
 
   return dbPool.execute(query, bodyData)
 }
@@ -37,6 +44,7 @@ const deleteUser = (id) => {
 module.exports = {
   getAllUsers,
   getUserById,
+  findEmail,
   createNewUser,
   updateUser,
   deleteUser
